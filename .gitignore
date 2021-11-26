@@ -1,1 +1,8 @@
 /Manifest.toml
+
+
+# build files
+deps.jl
+CVRPSEP-main
+cvrpsep.zip
+build.log
