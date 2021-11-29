@@ -4,8 +4,14 @@
 
 Generate the rounded capacity cuts and put them in `cmp::CnstrMgrPointer`. 
 
+Input:
+- Customers are numbered 2, 3, ... n_customers + 1.
+- Depot is numbered 1.
+
 Returns lists of `S` and `RHS` in the form of 
 `x(S:S) <= |S| - k(S)`
+
+`return list_S, list_RHS, is_integer_and_feasible, max_violation`
 """
 function rounded_capacity_cut!(
     cmp::CnstrMgrPointer, 
@@ -17,13 +23,13 @@ function rounded_capacity_cut!(
     max_n_cuts = 1000::Cint,
     integrality_tolerance = 1e-3::Cdouble
 )
-    n_customers = length(demand)
     n_edges = length(edge_tail)
 
     # In CVRPSEP, customers are 1, 2, ..., n_customers.
     # Since C starts with index 0, we need to fill the first element.
-    _demand = [-1; demand]
-    @assert length(_demand) == n_customers + 1
+    # The input vector `demand` should already contain 
+    _demand = demand 
+    n_customers = length(demand) - 1
 
     # make copies
     _edge_tail = copy(edge_tail)
@@ -50,8 +56,8 @@ function rounded_capacity_cut!(
 
     new_cmp = jl_CMGR_CreateCMgr()
 
-    integer_and_feasible = Ref{Cchar}()
-    max_violation = Ref{Cdouble}()
+    _integer_and_feasible = Ref{Cchar}()
+    _max_violation = Ref{Cdouble}()
 
     ccall(
         (:CAPSEP_SeparateCapCuts, LIB_CVRPSEP),
@@ -60,7 +66,7 @@ function rounded_capacity_cut!(
         Cint(n_customers), Cint.(_demand), Cint(capacity), 
         Cint(n_edges), Cint.(_edge_tail), Cint.(_edge_head), Cdouble.(_edge_x), 
         cmp, Cint(max_n_cuts), Cdouble(integrality_tolerance), 
-        integer_and_feasible, max_violation, new_cmp
+        _integer_and_feasible, _max_violation, new_cmp
     )
 
     new_cmr = unsafe_load(new_cmp)
@@ -79,5 +85,8 @@ function rounded_capacity_cut!(
 
     jl_CMGR_MoveCnstr!(new_cmp, cmp)
 
-    return list_S, list_RHS, Bool(integer_and_feasible[]), Float64(max_violation[])
+    is_integer_and_feasible = Bool(_integer_and_feasible[])
+    max_violation = Float64(_max_violation[])
+
+    return list_S, list_RHS, is_integer_and_feasible, max_violation
 end
