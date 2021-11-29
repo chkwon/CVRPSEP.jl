@@ -14,31 +14,53 @@ function rounded_capacity_cut!(
     edge_tail::Vector{Int}, 
     edge_head::Vector{Int}, 
     edge_x::Vector{Float64};
-    max_n_cuts = 10,
-    integrality_tolerance = 1e-4
+    max_n_cuts = 1000::Cint,
+    integrality_tolerance = 1e-3::Cdouble
 )
-    n_customers = length(demand) 
+    n_customers = length(demand)
     n_edges = length(edge_tail)
 
-    # In C, customers are 1, 2, ..., n.
-    # depot is n + 1.
+    # In CVRPSEP, customers are 1, 2, ..., n_customers.
+    # Since C starts with index 0, we need to fill the first element.
+    _demand = [-1; demand]
+    @assert length(_demand) == n_customers + 1
+
+    # make copies
     _edge_tail = copy(edge_tail)
     _edge_head = copy(edge_head)
+    _edge_x = copy(edge_x)
+
+    # In Julia,   customers are 2, 3, ..., n_customers+1
+    # In CVRPSEP, customers are 1, 2, ..., n_customers.
     _edge_tail .-= 1
     _edge_head .-= 1
+
+    # In Julia,   depot is 1
+    # In CVRPSEP, depot is n_customers+1
     _edge_tail[_edge_tail .== 0] .= n_customers + 1
     _edge_head[_edge_head .== 0] .= n_customers + 1
 
+    # In CVRPSEP, edges with positive x values are numbered 1, 2, ..., n_edges
+    # a dummy zero is necessary to fill the first element
+    _edge_tail = [-1; _edge_tail]
+    _edge_head = [-1; _edge_head]
+    _edge_x = [-1; _edge_x]
+
+    @assert length(_edge_tail) == n_edges + 1
+
     new_cmp = jl_CMGR_CreateCMgr()
 
-    integer_and_feasible = Ref{Cchar}(-9)
-    max_violation = Ref{Cdouble}(-9.9)
+    integer_and_feasible = Ref{Cchar}()
+    max_violation = Ref{Cdouble}()
 
     ccall(
         (:CAPSEP_SeparateCapCuts, LIB_CVRPSEP),
         Cvoid,
         (Cint, Ptr{Cint}, Cint, Cint, Ptr{Cint}, Ptr{Cint}, Ptr{Cdouble}, CnstrMgrPointer, Cint, Cdouble, Ref{Cchar}, Ref{Cdouble}, CnstrMgrPointer),
-        n_customers, demand, capacity, n_edges, _edge_tail, _edge_head, edge_x, cmp, max_n_cuts, integrality_tolerance, integer_and_feasible, max_violation, new_cmp
+        Cint(n_customers), Cint.(_demand), Cint(capacity), 
+        Cint(n_edges), Cint.(_edge_tail), Cint.(_edge_head), Cdouble.(_edge_x), 
+        cmp, Cint(max_n_cuts), Cdouble(integrality_tolerance), 
+        integer_and_feasible, max_violation, new_cmp
     )
 
     new_cmr = unsafe_load(new_cmp)
@@ -50,11 +72,12 @@ function rounded_capacity_cut!(
     for i in 1:length(cpl)
         cr = unsafe_load(cpl[i])
         S = unsafe_wrap(Vector{Cint}, cr.IntList, cr.IntListSize)[2:end]
-        push!(list_S, Int.(S) .+ 1) # For Julia, index += 1.
-        push!(list_RHS, cr.RHS)
+        S .+= 1 # For Julia, index += 1.
+        push!(list_S, Int.(S))
+        push!(list_RHS, Float64(cr.RHS))
     end
 
     jl_CMGR_MoveCnstr!(new_cmp, cmp)
 
-    return list_S, list_RHS, Bool(integer_and_feasible[]), max_violation[]
+    return list_S, list_RHS, Bool(integer_and_feasible[]), Float64(max_violation[])
 end
