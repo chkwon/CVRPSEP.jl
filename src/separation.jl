@@ -71,7 +71,7 @@ function rounded_capacity_cut!(
     list_RHS = Float64[]
     for i in 1:length(cpl)
         cr = unsafe_load(cpl[i])
-        S = unsafe_wrap(Vector{Cint}, cr.IntList, cr.IntListSize)[2:end]
+        S = unsafe_wrap(Vector{Cint}, cr.IntList, cr.IntListSize + 1)[2:end]
         S .+= 1 # For Julia, index += 1.
         push!(list_S, Int.(S))
         push!(list_RHS, Float64(cr.RHS))
