@@ -9,7 +9,8 @@ include("separation.jl")
 export LIB_CVRPSEP, ConstraintType, 
         CnstrRecord, CnstrPointer, CnstrPointerList, 
         CnstrMgrRecord, CnstrMgrPointer,
-        jl_CMGR_CreateCMgr,
+        CutRecord, CutManager, 
+        convert_CMP, init_cmp,
         rounded_capacity_cut!
 
 end

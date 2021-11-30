@@ -9,6 +9,7 @@ function jl_CMGR_CreateCMgr()
     )
     return cmp_ref[]
 end
+init_cmp = jl_CMGR_CreateCMgr # alias
 
 function jl_CMGR_MoveCnstr!(MyCutsCMP::CnstrMgrPointer, MyOldCutsCMP::CnstrMgrPointer)
     size = unsafe_load(MyCutsCMP).Size

@@ -14,14 +14,14 @@ Returns lists of `S` and `RHS` in the form of
 `return list_S, list_RHS, is_integer_and_feasible, max_violation`
 """
 function rounded_capacity_cut!(
-    cmp::CnstrMgrPointer, 
+    cut_manager::CutManager, 
     demand::Vector{Int}, 
     capacity::Int, 
     edge_tail::Vector{Int}, 
     edge_head::Vector{Int}, 
     edge_x::Vector{Float64};
     max_n_cuts = 1000::Cint,
-    integrality_tolerance = 1e-3::Cdouble
+    integrality_tolerance = 1e-4::Cdouble
 )
     n_edges = length(edge_tail)
 
@@ -54,7 +54,7 @@ function rounded_capacity_cut!(
 
     @assert length(_edge_tail) == n_edges + 1
 
-    new_cmp = jl_CMGR_CreateCMgr()
+    new_cmp = init_cmp()
 
     _integer_and_feasible = Ref{Cchar}()
     _max_violation = Ref{Cdouble}()
@@ -65,28 +65,25 @@ function rounded_capacity_cut!(
         (Cint, Ptr{Cint}, Cint, Cint, Ptr{Cint}, Ptr{Cint}, Ptr{Cdouble}, CnstrMgrPointer, Cint, Cdouble, Ref{Cchar}, Ref{Cdouble}, CnstrMgrPointer),
         Cint(n_customers), Cint.(_demand), Cint(capacity), 
         Cint(n_edges), Cint.(_edge_tail), Cint.(_edge_head), Cdouble.(_edge_x), 
-        cmp, Cint(max_n_cuts), Cdouble(integrality_tolerance), 
+        cut_manager.cmp, Cint(max_n_cuts), Cdouble(integrality_tolerance), 
         _integer_and_feasible, _max_violation, new_cmp
     )
 
-    new_cmr = unsafe_load(new_cmp)
+    # new_cmr = unsafe_load(new_cmp)
+    # cpl = unsafe_wrap(Array, new_cmr.CPL, new_cmr.Size)
+    # list_S = Vector{Int}[]
+    # list_RHS = Float64[]
+    # for i in 1:length(cpl)
+    #     cr = unsafe_load(cpl[i])
+    #     S = unsafe_wrap(Vector{Cint}, cr.IntList, cr.IntListSize + 1)[2:end]
+    #     S .+= 1 # For Julia, index += 1.
+    #     push!(list_S, Int.(S))
+    #     push!(list_RHS, Float64(cr.RHS))
+    # end
 
-    cpl = unsafe_wrap(Array, new_cmr.CPL, new_cmr.Size)
+    cut_manager.new_cuts = convert_CMP(new_cmp)
+    jl_CMGR_MoveCnstr!(new_cmp, cut_manager.cmp)
 
-    list_S = Vector{Int}[]
-    list_RHS = Float64[]
-    for i in 1:length(cpl)
-        cr = unsafe_load(cpl[i])
-        S = unsafe_wrap(Vector{Cint}, cr.IntList, cr.IntListSize + 1)[2:end]
-        S .+= 1 # For Julia, index += 1.
-        push!(list_S, Int.(S))
-        push!(list_RHS, Float64(cr.RHS))
-    end
-
-    jl_CMGR_MoveCnstr!(new_cmp, cmp)
-
-    is_integer_and_feasible = Bool(_integer_and_feasible[])
-    max_violation = Float64(_max_violation[])
-
-    return list_S, list_RHS, is_integer_and_feasible, max_violation
+    cut_manager.is_integer_and_feasible = Bool(_integer_and_feasible[])
+    cut_manager.violation = Float64(_max_violation[])
 end
