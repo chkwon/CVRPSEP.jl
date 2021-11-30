@@ -80,24 +80,23 @@ mutable struct CutRecord
         # with 0 position filled with an unused value 
         # hence, all Size + 1
         # then, [2:end]
-        # then .+ 1 for Julia customer numbering: 
-        #       2, 3, ... n_customers + 1
-        # except for `CoeffList`
         int_list = Int[]
         ext_list = Int[] 
         c_list = Int[] 
         coeff_list = Float64[] 
 
         if cr.IntList != C_NULL && cr.IntListSize > 0 
-            int_list = unsafe_wrap(Array, cr.IntList, cr.IntListSize + 1)[2:end] .+ 1
+            c_int_list = unsafe_wrap(Array, cr.IntList, cr.IntListSize + 1)
+            int_list = c_int_list[2:end]
         end
 
         if cr.ExtList != C_NULL && cr.ExtListSize > 0 
-            ext_list = unsafe_wrap(Array, cr.ExtList, cr.ExtListSize + 1)[2:end] .+ 1
+            c_ext_list = unsafe_wrap(Array, cr.ExtList, cr.ExtListSize + 1)
+            ext_list = c_ext_list[2:end]
         end
 
         if cr.CList != C_NULL && cr.CListSize > 0 
-            c_list = unsafe_wrap(Array, cr.CList, cr.CListSize + 1)[2:end] .+ 1
+            c_list = unsafe_wrap(Array, cr.CList, cr.CListSize + 1)[2:end]
         end
  
         ctype = ConstraintType(Int(cr.Ctype))
@@ -141,6 +140,6 @@ mutable struct CutManager
     violation::Float64
     cmp::CnstrMgrPointer
     function CutManager()
-        new(CutRecord[], false, Inf, init_cmp())
+        new(CutRecord[], false, Inf, init_CMP())
     end
 end
