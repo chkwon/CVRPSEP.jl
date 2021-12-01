@@ -13,7 +13,7 @@ Returns lists of `S` and `RHS` in the form of
 
 `return list_S, list_RHS, is_integer_and_feasible, max_violation`
 """
-function rounded_capacity_cut!(
+function rounded_capacity_cuts!(
     cut_manager::CutManager, 
     demand::Vector{Int}, 
     capacity::Int, 
@@ -33,7 +33,12 @@ function rounded_capacity_cut!(
     ccall(
         (:CAPSEP_SeparateCapCuts, LIB_CVRPSEP),
         Cvoid,
-        (Cint, Ptr{Cint}, Cint, Cint, Ptr{Cint}, Ptr{Cint}, Ptr{Cdouble}, CnstrMgrPointer, Cint, Cdouble, Ref{Cchar}, Ref{Cdouble}, CnstrMgrPointer),
+        (
+            Cint, Ptr{Cint}, Cint, 
+            Cint, Ptr{Cint}, Ptr{Cint}, Ptr{Cdouble}, 
+            CnstrMgrPointer, Cint, Cdouble, 
+            Ref{Cchar}, Ref{Cdouble}, CnstrMgrPointer
+        ),
         Cint(n_customers), Cint.(_demand), Cint(capacity), 
         Cint(n_edges), Cint.(_edge_tail), Cint.(_edge_head), Cdouble.(_edge_x), 
         cut_manager.cmp, Cint(max_n_cuts), Cdouble(integrality_tolerance), 

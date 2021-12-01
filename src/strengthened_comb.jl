@@ -1,4 +1,4 @@
-function strengthened_comb_inequality!(
+function strengthened_comb_inequalities!(
     demand::Vector{Int}, 
     capacity::Int, 
     edge_tail::Vector{Int}, 

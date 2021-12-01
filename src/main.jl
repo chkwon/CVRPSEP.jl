@@ -5,7 +5,9 @@ include("types.jl")
 include("cnstrmgr.jl")
 include("rounded_capacity.jl")
 include("strengthened_comb.jl")
-
+include("framed_capacity.jl")
+include("multistar.jl")
+include("hypotour.jl")
 
 function input_conversion(demand::Vector{Int}, edge_tail::Vector{Int}, edge_head::Vector{Int}, edge_x::Vector{Float64})
         n_edges = length(edge_tail)
