@@ -1,4 +1,5 @@
-# const LIB_CVRPSEP = joinpath(@__DIR__, "src", "libcvrpsep")
+import CVRPSEP_jll
+const LIB_CVRPSEP = CVRPSEP_jll.libcvrpsep
 
 # /* Definition of constants for identification of constraint types. */
 @enum ConstraintType begin
