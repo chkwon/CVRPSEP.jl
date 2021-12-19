@@ -1,5 +1,6 @@
+import CVRPSEP_jll
+const LIB_CVRPSEP = CVRPSEP_jll.libcvrpsep
 
-include(joinpath(@__DIR__, "../deps/deps.jl")) # const LIB_CVRPSEP
 
 include("types.jl")
 include("cnstrmgr.jl")
