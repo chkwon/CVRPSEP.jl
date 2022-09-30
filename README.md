@@ -13,3 +13,7 @@ To install:
 ```julia
 ] add https://github.com/chkwon/CVRPSEP.jl.git
 ```
+
+
+**NOTE:**
+This code is a work in progress. Currently `rounded_capacity_cuts!()`, `strengthened_comb_inequalities!()`, `framed_capacity_inequalities!()`, `hypotour_inequalities!()`, `multistar_inequalities!()` exist, but not tested sufficiently. PRs are welcome.
