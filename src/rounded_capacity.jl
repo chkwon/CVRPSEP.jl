@@ -13,7 +13,7 @@ Returns lists of `S` and `RHS` in the form of
 
 `return list_S, list_RHS, is_integer_and_feasible, max_violation`
 """
-function rounded_capacity_cuts!(
+function rounded_capacity_inequalities!(
     cut_manager::CutManager, 
     demand::Vector{Int}, 
     capacity::Int, 

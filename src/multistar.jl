@@ -1,4 +1,3 @@
-
 function multistar_inequalities!(
     cut_manager::CutManager, 
     demand::Vector{Int}, 

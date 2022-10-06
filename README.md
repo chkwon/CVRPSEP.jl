@@ -14,6 +14,14 @@ To install:
 ] add https://github.com/chkwon/CVRPSEP.jl.git
 ```
 
+**Current Status**
+This code is a work in progress.
 
-**NOTE:**
-This code is a work in progress. Currently `rounded_capacity_cuts!()`, `strengthened_comb_inequalities!()`, `framed_capacity_inequalities!()`, `hypotour_inequalities!()`, `multistar_inequalities!()` exist, but not tested sufficiently. PRs are welcome.
+- Rounded Capacity Inequalities: `rounded_capacity_cuts!()`, well tested
+- Homogeneous multistart inequalities: `multistar_inequalities!()`, reasonably tested
+- Generalized large multistar inequalities: not yet
+- Framed capacity inequalities: `framed_capacity_inequalities!()`, reasonably tested
+- Strengthened comb inequalities: `strengthened_comb_inequalities!()`, reasonably tested
+- Hypotour inequalities: `hypotour_inequalities!()`, failing. Needs debugging and testing.
+
+PRs are welcome for testing, developing, implementing, or improving.
