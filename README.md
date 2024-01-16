@@ -25,3 +25,11 @@ This code is a work in progress.
 - Hypotour inequalities: `hypotour_inequalities!()`, failing. Needs debugging and testing.
 
 PRs are welcome for testing, developing, implementing, or improving.
+
+
+**Related Projects**
+- [a minor modificiation](https://github.com/chkwon/CVRPSEP) of the original CVRPSEP library.
+- https://github.com/JuliaBinaryWrappers/CVRPSEP_jll.jl
+- https://github.com/JuliaPackaging/Yggdrasil/blob/master/C/CVRPSEP/build_tarballs.jl
+
+  
