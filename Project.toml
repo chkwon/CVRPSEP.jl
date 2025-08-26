@@ -1,7 +1,7 @@
 name = "CVRPSEP"
 uuid = "49b9cb24-3b24-4683-85fc-5390c403e40a"
 authors = ["Changhyun Kwon <chkwon@gmail.com> and contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 CVRPSEP_jll = "708e8d2e-5bbf-55cc-b455-510884a304cf"
