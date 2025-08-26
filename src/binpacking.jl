@@ -15,7 +15,7 @@ function BP_ExactBinPacking(bin_capacity::T, item_sizes::Vector{T}) where T <: I
     LB = Ref{Cint}()
     UB = Ref{Cint}()
 
-    # padding the item sizes with a zero at the beginning
+    # Pad with zero because the C library expects 1-based indexing for item sizes.
     _item_sizes = [0; item_sizes]
 
     # return vector for bin assignments (1-based)
