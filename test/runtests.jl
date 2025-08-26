@@ -99,6 +99,10 @@ include("testdata.jl")
         @show Head
         @show Coeff
         @show RHS
-    end          
+    end         
+    
+    
+    include("test_binpacking.jl")
 end
+
 

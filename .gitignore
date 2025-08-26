@@ -1,5 +1,6 @@
-/Manifest.toml
+.claude 
 
+/Manifest.toml
 
 # build files
 deps.jl

@@ -14,6 +14,7 @@ export LIB_CVRPSEP, ConstraintType,
         strengthened_comb_inequalities!,
         framed_capacity_inequalities!, 
         hypotour_inequalities!,
-        multistar_inequalities!
+        multistar_inequalities!,
+        BP_ExactBinPacking
 
 end
