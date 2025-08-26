@@ -2,6 +2,8 @@
 
 @testset "BP_ExactBinPacking Tests" begin
     
+    @info "Testing BP_ExactBinPacking function"
+
     @testset "Basic functionality" begin
         # Test case 1: Basic example from user
         CAP = 10
